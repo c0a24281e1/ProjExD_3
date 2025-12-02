@@ -148,6 +148,7 @@ def main():
     bird = Bird((300, 200))
     # bomb = Bomb((255, 0, 0), 10)
     bombs = []
+    beams = []
     for _ in range(NUM_OF_BOMBS):
         bomb = Bomb((255, 0, 0), 10)
         bombs.append(bomb)
@@ -161,8 +162,10 @@ def main():
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird)            
+                beam = Beam(bird)
+                beams.append(beam)            
         screen.blit(bg_img, [0, 0])
+        
         
         for b, bomb in enumerate(bombs):
             if bird.rct.colliderect(bomb.rct):
@@ -174,20 +177,27 @@ def main():
                 pg.display.update()
                 time.sleep(1)
                 return
-        for b, bomb in enumerate(bombs):
-            if beam is not None:   
+            
+        for i, beam in enumerate(beams):
+            for b, bomb in enumerate(bombs):
+                if beam is None:
+                    continue
+                if bomb is None:
+                    continue
                 if beam.rct.colliderect(bomb.rct):
                     #ビームが爆弾に当たったら、爆弾とビームを消す
-                    beam = None
                     bombs[b] = None
-                    bird.change_img(6, screen)
-                    pg.display.update()
-        bombs = [bomb for bomb in bombs if bomb is not None]
+                    beams[i] = None
 
+                    bird.change_img(6, screen)
+
+        bombs = [bomb for bomb in bombs if bomb is not None]
+        beams = [beam for beam in beams if beam is not None]
+        beams = [beam for beam in beams if check_bound(beam.rct)==(True,True) ]
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
-        if beam is not None: #ビームが存在していたら
-            beam.update(screen)   
+        for beam in beams: #ビームが存在していたら
+            beam.update(screen)    
         for bomb in bombs: #爆弾が存在していたら
             bomb.update(screen)
         pg.display.update()
