@@ -174,6 +174,7 @@ def main():
     bg_img = pg.image.load("fig/pg_bg.jpg")
     bird = Bird((300, 200))
     score = Score() #インスタンス生成
+    i=0  #スコア初期化
     
     # bomb = Bomb((255, 0, 0), 10)
     bombs = []
